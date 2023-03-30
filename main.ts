@@ -1,3 +1,44 @@
+function Tetrisprüfung () {
+    for (let Index = 0; Index <= 5; Index++) {
+        if (0 < led.pointBrightness(0, Index) && 0 < led.pointBrightness(1, Index) && (0 < led.pointBrightness(2, Index) && (0 < led.pointBrightness(3, Index) && 0 < led.pointBrightness(4, Index)))) {
+            Punkte += 1
+            for (let index = 0; index < 5; index++) {
+                led.plot(0, Index)
+                led.plot(1, Index)
+                led.plot(2, Index)
+                led.plot(3, Index)
+                led.plot(4, Index)
+                basic.pause(200)
+                led.unplot(0, Index)
+                led.unplot(1, Index)
+                led.unplot(2, Index)
+                led.unplot(3, Index)
+                led.unplot(4, Index)
+                basic.pause(200)
+            }
+            led.plotBrightness(0, Index, led.pointBrightness(0, Index - 1))
+            led.plotBrightness(1, Index, led.pointBrightness(1, Index - 1))
+            led.plotBrightness(2, Index, led.pointBrightness(2, Index - 1))
+            led.plotBrightness(3, Index, led.pointBrightness(3, Index - 1))
+            led.plotBrightness(4, Index, led.pointBrightness(4, Index - 1))
+            led.plotBrightness(0, Index - 1, led.pointBrightness(0, Index - 2))
+            led.plotBrightness(1, Index - 1, led.pointBrightness(1, Index - 2))
+            led.plotBrightness(2, Index - 1, led.pointBrightness(2, Index - 2))
+            led.plotBrightness(3, Index - 1, led.pointBrightness(3, Index - 2))
+            led.plotBrightness(4, Index - 1, led.pointBrightness(4, Index - 2))
+            led.plotBrightness(0, Index - 2, led.pointBrightness(0, Index - 3))
+            led.plotBrightness(1, Index - 2, led.pointBrightness(1, Index - 3))
+            led.plotBrightness(2, Index - 2, led.pointBrightness(2, Index - 3))
+            led.plotBrightness(3, Index - 2, led.pointBrightness(3, Index - 3))
+            led.plotBrightness(4, Index - 2, led.pointBrightness(4, Index - 3))
+            led.plotBrightness(0, Index - 3, led.pointBrightness(0, Index - 4))
+            led.plotBrightness(1, Index - 3, led.pointBrightness(1, Index - 4))
+            led.plotBrightness(2, Index - 3, led.pointBrightness(2, Index - 4))
+            led.plotBrightness(3, Index - 3, led.pointBrightness(3, Index - 4))
+            led.plotBrightness(4, Index - 3, led.pointBrightness(4, Index - 4))
+        }
+    }
+}
 function Figur2 () {
     FIGUR = 2
     if (Rotation2 == 1) {
@@ -69,6 +110,7 @@ input.onButtonPressed(Button.A, function () {
     if (MODE == 0) {
         basic.clearScreen()
         MODE = 5
+        Punkte = 0
     }
     if (MODE == 5) {
         if (FIGUR == 1) {
@@ -253,7 +295,6 @@ function Tetris () {
         Figur_3()
     }
     if (TOUCH >= 1) {
-        OberGrenzPrüfung()
         Shuffle = randint(1, 3)
         FIGUR_X = 2
         FIGUR_Y = 0
@@ -264,13 +305,42 @@ function Tetris () {
         Figur_DelY2 = -2
         Figur_DelY3 = -2
         TOUCH = 0
+        OberGrenzPrüfung()
+        Tetrisprüfung()
     } else {
         GO()
     }
     TouchPrüfung()
 }
+function GameOver () {
+    basic.pause(100)
+    TOUCH = 0
+    for (let index = 0; index < 12; index++) {
+        led.setBrightness(0)
+        basic.pause(100)
+        led.setBrightness(255)
+        basic.pause(100)
+    }
+    basic.clearScreen()
+    basic.showLeds(`
+        # # # . .
+        # . # . #
+        # # # . .
+        # . . . #
+        # . . . .
+        `)
+    basic.pause(500)
+    basic.showNumber(Punkte)
+    basic.clearScreen()
+    MODE = 0
+}
 function OberGrenzPrüfung () {
-	
+    for (let Index = 0; Index <= 5; Index++) {
+        if (led.pointBrightness(Index - 1, 1) > 0) {
+            GameOver()
+            break;
+        }
+    }
 }
 let Figur_DelY3 = 0
 let Figur_DelX3 = 0
@@ -285,13 +355,13 @@ let Figur_X2 = 0
 let Figur_Y1 = 0
 let Figur_X1 = 0
 let FIGUR = 0
+let Punkte = 0
 let FIGUR_X = 0
 let FIGUR_Y = 0
 let MODE = 0
 let TOUCH = 0
 let Rotation2 = 0
 let Shuffle = 0
-let Loop2 = 1
 Shuffle = randint(1, 3)
 Rotation2 = 1
 TOUCH = 0
